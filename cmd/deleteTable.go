@@ -30,11 +30,15 @@ var deleteTableCmd = &cobra.Command{
 	Long: `Responsible for deleting open market storage.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		logger := log.WithFields(log.Fields{"app": "market"})
-		err := db.DeleteTable(constants.TableName)
+		conn, err := db.NewDB()
+		logger.Info("Connection opened")
+		if conn != nil {
+			err = conn.DeleteTable(constants.TableName)
+		}
 		if err != nil {
 			logger.Error(err.Error())
 		} else {
-			logger.Info("Table created")
+			logger.Info("Table deleted")
 		}
 	},
 }

@@ -29,8 +29,11 @@ var createTableCmd = &cobra.Command{
 	Long: `Responsible for storing open market infos with great response time on write with high scalability.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		logger := log.WithFields(log.Fields{"app": "market"})
-
-		err := db.CreateTable(constants.TableName)
+		conn, err := db.NewDB()
+		logger.Info("Connection opened")
+		if conn != nil {
+			err = conn.CreateTable(constants.TableName)
+		}
 		if err != nil {
 			logger.Error(err.Error())
 		} else {

@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/andersonribeir0/market/db"
 	"github.com/andersonribeir0/market/model"
+	"math/rand"
 	"os"
+	"strconv"
 	"testing"
 )
 
@@ -21,6 +23,7 @@ func TestMain(m *testing.M) {
 
 func setUp() {
 	conn = &db.DB{}
+	conn.DeleteTable(tableName)
 	if err := conn.CreateTable(tableName); err != nil {
 		fmt.Fprintf(os.Stdout, "error creating table: %v\n", err)
 		os.Exit(1)
@@ -47,6 +50,25 @@ func TestMarketRepository_New(t *testing.T) {
 	}
 }
 
+func putRecord(district string, id string, codDist string, areaP string) (*db.DB, error){
+	conn = db.GetConn()
+	repo := &MarketRepository{
+		market: model.Record{},
+		conn:   nil,
+		tableName: tableName,
+	}
+	mid := json.Number(id)
+	cod := json.Number(codDist)
+	area := json.Number(areaP)
+	repo.New(model.Record{
+		Id:           &mid,
+		CodDist:      &cod,
+		District:     &district,
+		AreaP:        &area,
+	})
+	return conn, repo.Save()
+}
+
 func TestMarketRepository_Save(t *testing.T) {
 	conn = &db.DB{}
 	repo := &MarketRepository{
@@ -59,7 +81,7 @@ func TestMarketRepository_Save(t *testing.T) {
 	codDist := json.Number("5122")
 	areaP := json.Number("564558814158")
 	repo.New(model.Record{
-	    Id:     &id,
+	    Id:           &id,
 		CodDist:      &codDist,
 		District:     &district,
 		AreaP:        &areaP,
@@ -68,5 +90,38 @@ func TestMarketRepository_Save(t *testing.T) {
 	err := repo.Save()
 	if err != nil {
 		t.Fatalf("Error when saving a new record %s", err.Error())
+	}
+}
+
+
+func TestMarketRepository_GetById(t *testing.T) {
+	id := strconv.Itoa(rand.Int())
+	conn, err := putRecord("Goytacazes", id, "14", "41")
+	if err != nil {
+		t.Fatalf("Error when saving a new record %s", err.Error())
+	}
+	rec, err := conn.GetRecordById(id, tableName)
+	if err != nil {
+		t.Fatalf("Error when getting record %s", err.Error())
+	}
+	if rec["ID"].(string) != id {
+		t.Fatalf("Expected to return record with id %s. Got %s", id, rec["ID"])
+	}
+}
+
+func TestMarketRepository_GetByDistrictId(t *testing.T) {
+	id := strconv.Itoa(rand.Int())
+	districtId := "14"
+	conn, err := putRecord("Goytacazes", id, districtId, "41")
+	if err != nil {
+		t.Fatalf("Error when saving a new record %s", err.Error())
+	}
+	rec, err := conn.GetRecordByDistrictId(districtId, tableName)
+	if err != nil {
+		t.Fatalf("Error when getting record %s", err.Error())
+	}
+
+	if rec[0]["CODDIST"].(string) != districtId {
+		t.Fatalf("Expected to return record with id %s. Got %s", id, rec[0]["CODDIST"].(string))
 	}
 }

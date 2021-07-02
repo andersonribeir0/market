@@ -11,18 +11,27 @@ import (
 )
 
 type DB struct {
-	dynamo    *dynamodb.DynamoDB
+	dynamo *dynamodb.DynamoDB
+}
+
+var conn *DB
+
+func GetConn() *DB {
+	if conn == nil || conn.dynamo == nil {
+		conn, _ = NewDB()
+	}
+	return conn
 }
 
 func NewDB() (*DB, error) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		Config: aws.Config{
-			Endpoint:                          aws.String("http://localhost:8000"),
-			Region:                            aws.String("us-east-1"),
-			LogLevel:                          aws.LogLevel(aws.LogDebug),
+			Endpoint: aws.String("http://localhost:8000"),
+			Region:   aws.String("us-east-1"),
+			LogLevel: aws.LogLevel(aws.LogOff),
 		},
 	}))
-	return &DB{ dynamo: dynamodb.New(sess) }, nil
+	return &DB{dynamo: dynamodb.New(sess)}, nil
 }
 
 func (db *DB) PutRecord(item model.Record, tableName string) error {
@@ -38,7 +47,6 @@ func (db *DB) PutRecord(item model.Record, tableName string) error {
 	input := &dynamodb.PutItemInput{
 		Item:      av,
 		TableName: aws.String(tableName),
-
 	}
 
 	_, err = db.dynamo.PutItem(input)
@@ -50,6 +58,60 @@ func (db *DB) PutRecord(item model.Record, tableName string) error {
 	}
 
 	return nil
+}
+
+func (db *DB) GetRecordById(id string, tableName string) (map[string]interface{}, error) {
+	input := &dynamodb.GetItemInput{
+		Key: map[string]*dynamodb.AttributeValue{
+			"ID": {
+				S: aws.String(id),
+			},
+		},
+		TableName:      aws.String(tableName),
+		ConsistentRead: aws.Bool(true),
+	}
+
+	item, err := db.dynamo.GetItem(input)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Error when getting by Id %s", err.Error()))
+	}
+
+	var record map[string]interface{}
+	if item.Item != nil {
+		err = dynamodbattribute.UnmarshalMap(item.Item, &record)
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("Error when unmarhalling map %s", err.Error()))
+		}
+	}
+
+	return record, nil
+}
+
+func (db *DB) GetRecordByDistrictId(id string, tableName string) ([]map[string]interface{}, error) {
+	input := &dynamodb.QueryInput{
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":districtId": {
+				S: aws.String(id),
+			},
+		},
+		IndexName:              aws.String("districtIdIdx"),
+		KeyConditionExpression: aws.String("CODDIST = :districtId"),
+		TableName:      		aws.String(tableName),
+	}
+
+	item, err := db.dynamo.Query(input)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Error when getting by Id %s", err.Error()))
+	}
+
+	var record []map[string]interface{}
+	if item.Items != nil {
+		err = dynamodbattribute.UnmarshalListOfMaps(item.Items, &record)
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("Error when unmarhalling map %s", err.Error()))
+		}
+	}
+	return record, nil
 }
 
 func (db *DB) DeleteTable(tableName string) error {
@@ -83,27 +145,22 @@ func (db *DB) CreateTable(tableName string) error {
 				AttributeName: aws.String("ID"),
 				KeyType:       aws.String("HASH"),
 			},
-			{
-				AttributeName: aws.String("CODDIST"),
-				KeyType:       aws.String("RANGE"),
-			},
 		},
-		LocalSecondaryIndexes: []*dynamodb.LocalSecondaryIndex{
+		GlobalSecondaryIndexes: []*dynamodb.GlobalSecondaryIndex{
 			{
 				IndexName: aws.String("districtIdIdx"),
 				KeySchema: []*dynamodb.KeySchemaElement{
 					{
-						AttributeName: aws.String("ID"),
-						KeyType:       aws.String("HASH"),
-					},
-					{
 						AttributeName: aws.String("CODDIST"),
-						KeyType:       aws.String("RANGE"),
+						KeyType:       aws.String("HASH"),
 					},
 				},
 				Projection: &dynamodb.Projection{
-					ProjectionType:   aws.String("INCLUDE"),
-					NonKeyAttributes: []*string{aws.String("CODDIST")},
+					ProjectionType:   aws.String("ALL"),
+				},
+				ProvisionedThroughput: &dynamodb.ProvisionedThroughput{
+					ReadCapacityUnits:  aws.Int64(1),
+					WriteCapacityUnits: aws.Int64(2),
 				},
 			},
 		},
