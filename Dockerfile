@@ -11,5 +11,3 @@ RUN touch ~/.aws/credentials
 
 RUN printf "[default]\naws_access_key_id=FAKE_AWS_ACCESS_KEY_ID_PREPROD \n\
 aws_secret_access_key=FAKE_AWS_ACCESS_SECRET_KEY_PREPROD" >> ~/.aws/credentials
-
-CMD ["market-app"]

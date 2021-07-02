@@ -38,7 +38,7 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var ps parser.CsvFileParser
 		repo := &repository.MarketRepository {}
-		ps = *ps.New("./market/csv/", "DEINFO_AB_FEIRASLIVRES_2014.csv")
+		ps = *ps.New("./csv/", "DEINFO_AB_FEIRASLIVRES_2014.csv")
 		result, err  := ps.Parse()
 		if err != nil {
 			fmt.Fprintf(os.Stdout, "Failed to import %s", err.Error())

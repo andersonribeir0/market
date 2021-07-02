@@ -7,6 +7,9 @@ stop:
 build-dev:
 	docker-compose -f docker-compose.development.yaml build
 
+build:
+	docker-compose -f docker-compose.yaml build
+
 dev:
 	docker-compose -f docker-compose.development.yaml up -d
 	docker exec -it market bash
