@@ -37,14 +37,7 @@ func tearDown() {
 
 func TestMarketRepository_New(t *testing.T) {
 	repo := &MarketRepository{}
-	district := "Sana"
-	id := json.Number('1')
-	codDist := json.Number('5')
-	err := repo.New(model.Record{
-		Id:           &id,
-		CodDist:      &codDist,
-		District:     &district,
-	})
+	err := repo.New()
 	if err != nil {
 		t.Fatalf("Impossible to create MarketRepository %s", err.Error())
 	}
@@ -53,26 +46,24 @@ func TestMarketRepository_New(t *testing.T) {
 func putRecord(district string, id string, codDist string, areaP string) (*db.DB, error){
 	conn = db.GetConn()
 	repo := &MarketRepository{
-		market: model.Record{},
 		conn:   nil,
 		tableName: tableName,
 	}
 	mid := json.Number(id)
 	cod := json.Number(codDist)
 	area := json.Number(areaP)
-	repo.New(model.Record{
+	repo.New()
+	return conn, repo.Save(model.Record{
 		Id:           &mid,
 		CodDist:      &cod,
 		District:     &district,
 		AreaP:        &area,
 	})
-	return conn, repo.Save()
 }
 
 func TestMarketRepository_Save(t *testing.T) {
 	conn = &db.DB{}
 	repo := &MarketRepository{
-		market: model.Record{},
 		conn:   nil,
 		tableName: tableName,
 	}
@@ -80,14 +71,14 @@ func TestMarketRepository_Save(t *testing.T) {
 	id := json.Number("1455588585588555554")
 	codDist := json.Number("5122")
 	areaP := json.Number("564558814158")
-	repo.New(model.Record{
-	    Id:           &id,
+	repo.New()
+
+	err := repo.Save(model.Record{
+		Id:           &id,
 		CodDist:      &codDist,
 		District:     &district,
 		AreaP:        &areaP,
 	})
-
-	err := repo.Save()
 	if err != nil {
 		t.Fatalf("Error when saving a new record %s", err.Error())
 	}

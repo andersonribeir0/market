@@ -13,7 +13,7 @@ type Record struct {
 	Lat              *json.Number     `json:"LAT,omitempty"`
 	SetCens          *json.Number  	  `json:"SETCENS,omitempty"`
 	AreaP            *json.Number  	  `json:"AREAP,omitempty"`
-	CodDist          *json.Number     `json:"CODDIST" validate:"required" binding:"required"`
+	CodDist          *string     	  `json:"CODDIST" validate:"required" binding:"required"`
 	District         *string 		  `json:"DISTRITO,omitempty"`
 	CodSubPref       *json.Number     `json:"CODSUBPREF,omitempty"`
 	SubPref          *string 		  `json:"SUBPREFE,omitempty"`
@@ -32,7 +32,7 @@ func (r Record) FromRecordMap(kv map[string]interface{}) (Record, error) {
 	jsonString, _ := json.Marshal(kv)
 	err := json.Unmarshal(jsonString, &record)
 	if err != nil {
-		return record, errors.New(fmt.Sprintf("Error when parsing map to struct %#v", kv))
+		return record, errors.New(fmt.Sprintf("Error when parsing map to struct %#v %s", kv, err.Error()))
 	}
 	return record, nil
 }

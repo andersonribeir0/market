@@ -12,5 +12,5 @@
 *.out
 
 # Removing csv files
-/parser/input/*
+/csv/*
 /parser/output/*

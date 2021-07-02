@@ -18,7 +18,7 @@ type CsvFileParser struct {
 	keys			   []string
 }
 
-func (fp *CsvFileParser) New(path string, fileName string) *CsvFileParser {
+func (fp CsvFileParser) New(path string, fileName string) *CsvFileParser {
 	return &CsvFileParser{
 		path:       path,
 		fileName:   fileName,
@@ -26,7 +26,8 @@ func (fp *CsvFileParser) New(path string, fileName string) *CsvFileParser {
 }
 
 func (fp *CsvFileParser) Parse() ([]map[string]interface{}, error) {
-	f, err := os.Open(fp.path + fp.fileName)
+	path := fp.path + fp.fileName
+	f, err := os.Open(path)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Error when trying to open file %s from path %s: %s",
 			fp.path,

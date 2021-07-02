@@ -3,24 +3,23 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"github.com/andersonribeir0/market/constants"
 	"github.com/andersonribeir0/market/db"
 	"github.com/andersonribeir0/market/model"
 )
 
-type Repository interface {
-	Save() error
-	GetItem(id string) (*model.Record, error)
+type IMarketRepository interface {
+	Save(market model.Record) error
+	GetItem(id string) (model.Record, error)
 	GetItemsByDistrictId(id string) ([]model.Record, error)
 }
 
 type MarketRepository struct {
-	market    model.Record
 	conn      *db.DB
 	tableName string
 }
 
-func (mr *MarketRepository) New(record model.Record) error{
-	mr.market = record
+func (mr *MarketRepository) New() error{
 	conn, err := db.NewDB()
 	if err != nil {
 		return errors.New(fmt.Sprintf(
@@ -28,11 +27,14 @@ func (mr *MarketRepository) New(record model.Record) error{
 			err.Error()))
 	}
 	mr.conn = conn
+	if mr.tableName == "" {
+		mr.tableName = constants.TableName
+	}
 	return nil
 }
 
-func (mr *MarketRepository) Save() error{
-	return mr.conn.PutRecord(mr.market, mr.tableName)
+func (mr *MarketRepository) Save(market model.Record) error{
+	return mr.conn.PutRecord(market, mr.tableName)
 }
 
 func (mr *MarketRepository) GetItem(id string) (model.Record, error) {
