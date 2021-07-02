@@ -50,12 +50,11 @@ func putRecord(district string, id string, codDist string, areaP string) (*db.DB
 		tableName: tableName,
 	}
 	mid := json.Number(id)
-	cod := json.Number(codDist)
 	area := json.Number(areaP)
 	repo.New()
 	return conn, repo.Save(model.Record{
 		Id:           &mid,
-		CodDist:      &cod,
+		CodDist:      &codDist,
 		District:     &district,
 		AreaP:        &area,
 	})
@@ -69,7 +68,7 @@ func TestMarketRepository_Save(t *testing.T) {
 	}
 	district := "Sanaaaaa"
 	id := json.Number("1455588585588555554")
-	codDist := json.Number("5122")
+	codDist := "5122"
 	areaP := json.Number("564558814158")
 	repo.New()
 

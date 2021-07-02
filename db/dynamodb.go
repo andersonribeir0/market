@@ -26,7 +26,7 @@ func GetConn() *DB {
 func NewDB() (*DB, error) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		Config: aws.Config{
-			Endpoint: aws.String("http://localhost:8000"),
+			Endpoint: aws.String("http://dynamodb:8000"),
 			Region:   aws.String("us-east-1"),
 			LogLevel: aws.LogLevel(aws.LogOff),
 		},

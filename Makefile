@@ -1,21 +1,19 @@
-init:
-	docker volume create --name=dynamodb_data
-	docker volume create --name=market_data
-
 clear:
 	docker-compose -f docker-compose.yaml down
 
 stop:
 	docker-compose -f docker-compose.yaml stop
 
-build:
+build-dev:
 	docker-compose -f docker-compose.development.yaml build
 
-exec-dev:
+dev:
 	docker-compose -f docker-compose.development.yaml up -d
 	docker exec -it market bash
 
-prepare:
+dynamodb:
 	docker-compose -f docker-compose.yaml up -d dynamodb
-	curl localhost:8000 || sleep 15
+	curl localhost:8000 || sleep 5
 
+app:
+	docker-compose -f docker-compose.yaml up -d app

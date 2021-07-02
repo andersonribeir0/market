@@ -5,7 +5,7 @@ import "testing"
 func TestRecord_FromRecordMap(t *testing.T) {
 	rec := Record{}
 	district := "Goytacazes"
-	codDist := int64(12)
+	codDist := "12"
 	id := int64(1)
 	kv := map[string]interface{} {
 		"ID": id,
@@ -26,9 +26,8 @@ func TestRecord_FromRecordMap(t *testing.T) {
 		t.Fatalf("Expected id to be equals to %d. But got %d", recId, id)
 	}
 
-	recCodDist, _ := rec.CodDist.Int64()
-	if recCodDist != codDist {
-		t.Fatalf("Expected codDist to be equals to %d. But got %d", recCodDist, codDist)
+	if codDist != *rec.CodDist {
+		t.Fatalf("Expected codDist to be equals to %s. But got %s", codDist,  *rec.CodDist)
 	}
 }
 
@@ -36,7 +35,7 @@ func TestRecord_FromRecordMap(t *testing.T) {
 func TestRecord_FromRecordMapList(t *testing.T) {
 	var rec Record
 	district := "Goytacazes"
-	codDist := int64(12)
+	codDist := "12"
 	id := int64(1)
 	kv := map[string]interface{} {
 		"ID": id,
