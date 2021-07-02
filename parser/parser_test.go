@@ -1,32 +1,49 @@
 package parser
 
 import (
-	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
-const FilePath = "./"
-const FileName = "DEINFO_AB_FEIRASLIVRES_2014.csv"
 
 func getCsvFileInstance() CsvFileParser {
+	path := filepath.Base("./mock_input")
 	return CsvFileParser{
-		path:     FilePath,
-		fileName: FileName,
+		path:     path,
+		fileName: string(os.PathSeparator) + "csv_test.csv",
+	}
+}
+
+func getInvalidCsvFileInstance() CsvFileParser {
+	path := filepath.Base("./mock_input")
+	return CsvFileParser{
+		path:     path,
+		fileName: string(os.PathSeparator) + "invalid_csv_test.csv",
 	}
 }
 
 func TestShouldParseCsvRecordSuccessfully(t *testing.T) {
 	csvFileParser := getCsvFileInstance()
 
-	if err := csvFileParser.Open(); err != nil {
-		t.Fatalf(fmt.Sprintf("Error when trying to open file %s with path %s: %s",
+	records, err := csvFileParser.Parse()
+	if err != nil {
+		t.Fatalf("Error when trying to parse file %s with path %s: %s",
 			csvFileParser.fileName,
 			csvFileParser.path,
-			err.Error()))
+			err.Error())
 	}
 
-	_, err := csvFileParser.ParseLine()
-	if err != nil {
-		t.Fatalf(fmt.Sprintf("Error when trying reading parse line: %s", err.Error()))
+	if records == nil {
+		t.Fatalf("Empty records")
+	}
+
+}
+
+func TestShouldReturnErrorWhenCsvFileIsInvalid(t *testing.T) {
+	csvFileParser := getInvalidCsvFileInstance()
+	_, err := csvFileParser.Parse()
+	if err == nil {
+		t.Fatalf("Should return an error when csv file is invalid")
 	}
 }

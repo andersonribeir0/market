@@ -1,0 +1,21 @@
+version: "3"
+
+volumes:
+  dynamodb_data:
+    external: true
+  market_data:
+    external: true
+
+services:
+
+  app:
+    build: .
+    entrypoint: ["go", "run", "main.go"]
+
+
+  dynamodb:
+    image: amazon/dynamodb-local:1.16.0
+    #command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-dbPath", "/home/dynamodblocal/data/"]
+    command: [ "-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory" ]
+    ports:
+      - '8000:8000'
