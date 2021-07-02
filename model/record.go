@@ -27,7 +27,7 @@ type Record struct {
 	AddressRef       *string 		  `json:"REFERENCIA,omitempty"`
 }
 
-func (r Record) FromCsvRecordMap(kv map[string]interface{}) (Record, error) {
+func (r Record) FromRecordMap(kv map[string]interface{}) (Record, error) {
 	record := Record{}
 	jsonString, _ := json.Marshal(kv)
 	err := json.Unmarshal(jsonString, &record)
@@ -37,3 +37,12 @@ func (r Record) FromCsvRecordMap(kv map[string]interface{}) (Record, error) {
 	return record, nil
 }
 
+func (r Record) FromRecordMapList(lkv []map[string]interface{}) ([]Record, error) {
+	var record []Record
+	jsonString, _ := json.Marshal(lkv)
+	err := json.Unmarshal(jsonString, &record)
+	if err != nil {
+		return record, errors.New(fmt.Sprintf("Error when parsing map list to struct %#v", lkv))
+	}
+	return record, nil
+}

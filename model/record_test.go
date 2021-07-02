@@ -2,7 +2,7 @@ package model
 
 import "testing"
 
-func TestRecord_FromCsvRecordMap(t *testing.T) {
+func TestRecord_FromRecordMap(t *testing.T) {
 	rec := Record{}
 	district := "Goytacazes"
 	codDist := int64(12)
@@ -12,7 +12,7 @@ func TestRecord_FromCsvRecordMap(t *testing.T) {
 		"CODDIST": codDist,
 		"DISTRITO": district,
 	}
-	rec, err := rec.FromCsvRecordMap(kv)
+	rec, err := rec.FromRecordMap(kv)
 	if err != nil {
 		t.Fatalf("Expected to get a record. %s", err.Error())
 	}
@@ -29,5 +29,28 @@ func TestRecord_FromCsvRecordMap(t *testing.T) {
 	recCodDist, _ := rec.CodDist.Int64()
 	if recCodDist != codDist {
 		t.Fatalf("Expected codDist to be equals to %d. But got %d", recCodDist, codDist)
+	}
+}
+
+
+func TestRecord_FromRecordMapList(t *testing.T) {
+	var rec Record
+	district := "Goytacazes"
+	codDist := int64(12)
+	id := int64(1)
+	kv := map[string]interface{} {
+		"ID": id,
+		"CODDIST": codDist,
+		"DISTRITO": district,
+	}
+	lkv := []map[string]interface{}{kv}
+
+	recs, err := rec.FromRecordMapList(lkv)
+	if err != nil {
+		t.Fatalf("Expected to get a record. %s", err.Error())
+	}
+
+	if len(recs) != 1 {
+		t.Fatalf("Expected length to be equals to 1. Got %d", len(recs))
 	}
 }
