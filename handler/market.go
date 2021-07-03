@@ -74,13 +74,15 @@ func (m *MarketHandler) GetByDistCode(c *gin.Context) {
 }
 
 func (m *MarketHandler) setMarketRepo() {
-	marketRepo := repository.MarketRepository{}
-	err := marketRepo.New()
-	if err != nil {
-		m.Logger.Error("Error creating repo instance",
-			err,
-			fmt.Sprintf("requestId:%s", m.requestId))
+	if m.marketRepo == nil {
+		marketRepo := repository.MarketRepository{}
+		err := marketRepo.New()
+		if err != nil {
+			m.Logger.Error("Error creating repo instance",
+				err,
+				fmt.Sprintf("requestId:%s", m.requestId))
+		}
+		m.marketRepo = &marketRepo
 	}
-	m.marketRepo = &marketRepo
 }
 

@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"github.com/andersonribeir0/market/model"
+	"github.com/andersonribeir0/market/utils"
 	"os"
 	"testing"
 )
@@ -30,7 +30,7 @@ func tearDown() {
 }
 
 func TestDB(t *testing.T) {
-	record := model.GetFakeRecord()
+	record := utils.GetFakeRecord()
 	err := connTest.PutRecord(record, tableName)
 	if err != nil {
 		t.Fatalf("Error on PutRecord %s", err.Error())
