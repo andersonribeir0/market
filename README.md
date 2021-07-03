@@ -33,5 +33,17 @@ Para isso, execute: `make createTable`. Esse comando inicia a criação da tabel
 - `/v1/market?codInfo=:codInfo`
 
 # Testes
-Para executar os testes. Basta executar o comando `make test`. Ele irá gerar um relatório em dois aquivos, um html `coverage.html` e outro `coverage.out` com a cobertura de testes por pacote.
+Para executar os testes unitários e de integração. Basta executar o comando `make test`. Ele irá gerar um relatório em dois aquivos, um html `coverage.html` e outro `coverage.out` com a cobertura de testes por pacote.
 A cobertura de testes é realizada de maneira independente pacote a pacote.
+
+# Comandos
+
+- `make clear` exclui todos os container e imagens geradas
+- `make stop` derruba todos os containers
+- `make build` executa o processo de construção da imagem da aplicação
+- `make dynamodb` levanta um container baseado na imagem existente do dynamo no dockerhub
+- `make createTable` cria tabela no dynamodb
+- `make deleteTable` exclui a tabela no dynamodb
+- `make importCsv` popula o dynamodb com os dados do csv
+- `make app` levanta um container da aplicação baseada na imagem gerada pelo comando `make build`
+- `make test` executa os testar unitários e de integração
