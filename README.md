@@ -19,3 +19,7 @@ Para isso, execute: `make createTable`. Esse comando inicia a criação da tabel
 
 **Caso não possua cURL, você pode também utilizar um outro cliente como o Postman.*
 
+# Testes
+Para executar os testes. Basta executar o comando `make test`. Ele irá gerar um relatório arquivo html `coverage.html` com a cobertura de testes por pacote.
+A cobertura de testes é realizada de maneira independente pacote a pacote.
+
