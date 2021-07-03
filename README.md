@@ -1,1 +1,21 @@
-# market
+# Market
+Aplicação responsável por exposição de dados sobre feira livre.
+
+# Requisitos para executar a aplicação
+- docker
+- docker-compose
+- make
+- cURL (opcional)
+
+# Executando a aplicação localmente
+1. Na raiz do repositório, execute o comando `make build` para iniciar a geração da imagem da aplicação.
+2. Após a geração da imagem "market_app", agora podemos criar os containers executando `make run`.
+3. Agora deve ser possível executar um simples comando cURL para verificar se o container está rodando normalmente:
+`curl -X GET "localhost:8080/health" | json_pp -json_opt pretty,canonical`
+4. Agora é preciso criar a tabela e popular a base de dados com o arquivo csv que se encontra em seu respectivo pacote.
+Para isso, execute: `make createTable`. Esse comando inicia a criação da tabela e pode levar alguns poucos segundos para ser executado.
+5. Uma vez criada, a tabela deve ser preenchida com os dados do arquivo csv. Execute o comando `make importCsv`.
+6. Feita a importação podemos novamente executar um comando cURL para validar a importação feita com sucesso: `curl -X GET "localhost:8080/v1/market/1" | json_pp -json_opt pretty,canonical`
+
+**Caso não possua cURL, você pode também utilizar um outro cliente como o Postman.*
+
