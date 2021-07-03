@@ -10,7 +10,8 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+*.html
 
 # Removing csv files
 /csv/*
-/parser/output/*
+
