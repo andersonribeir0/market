@@ -38,7 +38,7 @@ A cobertura de testes é realizada de maneira independente pacote a pacote.
 
 # Comandos
 
-- `make clear` exclui todos os container e imagens geradas
+- `make clear` exclui todos os containers
 - `make stop` derruba todos os containers
 - `make build` executa o processo de construção da imagem da aplicação
 - `make dynamodb` levanta um container baseado na imagem existente do dynamo no dockerhub
