@@ -33,6 +33,5 @@ Para isso, execute: `make createTable`. Esse comando inicia a criação da tabel
 - `/v1/market?codInfo=*codInfo`
 
 # Testes
-Para executar os testes. Basta executar o comando `make test`. Ele irá gerar um relatório arquivo html `coverage.html` com a cobertura de testes por pacote.
+Para executar os testes. Basta executar o comando `make test`. Ele irá gerar um relatório em dois aquivos, um html `coverage.html` e outro `coverage.out` com a cobertura de testes por pacote.
 A cobertura de testes é realizada de maneira independente pacote a pacote.
-
