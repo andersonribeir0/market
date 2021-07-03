@@ -1,16 +1,62 @@
 package db
 
-import "testing"
+import (
+	"fmt"
+	"github.com/andersonribeir0/market/model"
+	"os"
+	"testing"
+)
 
-func TestTableOperations(t *testing.T) {
-	tableName := "a_table_name"
-	conn := &DB{}
-	err := conn.CreateTable(tableName)
-	if err != nil {
-		t.Fatalf("An error occurred when trying to create a table in dynamodb %s", err.Error())
+const tableName = "a_table_name"
+var connTest, _ = NewDB()
+
+func TestMain(m *testing.M) {
+	setUp()
+	retCode := m.Run()
+	tearDown()
+	os.Exit(retCode)
+}
+
+func setUp() {
+	connTest.DeleteTable(tableName)
+	if err := connTest.CreateTable(tableName); err != nil {
+		fmt.Fprintf(os.Stdout, "error creating table: %v\n", err)
+		os.Exit(1)
 	}
-	err = conn.DeleteTable(tableName)
+}
+
+func tearDown() {
+	connTest.DeleteTable(tableName)
+}
+
+func TestDB(t *testing.T) {
+	record := model.GetFakeRecord()
+	err := connTest.PutRecord(record, tableName)
 	if err != nil {
-		t.Fatalf("An error occurred when trying to delete table in dynamodb %s", err.Error())
+		t.Fatalf("Error on PutRecord %s", err.Error())
+	}
+
+	result, err := connTest.GetRecordById(record.Id.String(), tableName)
+	if err != nil {
+		t.Fatalf("Error on GetRecordById %s", err.Error())
+	}
+	if result == nil {
+		t.Fatalf("Error on GetRecordById. Should get one record with id %s. But got nil", record.Id.String())
+	}
+	if result["ID"].(string) != record.Id.String() {
+		t.Fatalf("Error on GetRecordById. Should get one record with id %s. But got %s",
+			record.Id.String(), result["ID"])
+	}
+
+	resultList, err := connTest.GetRecordByDistrictId(*record.CodDist, tableName)
+	if len(resultList) != 1 {
+		t.Fatalf("Error on GetRecordByDistrictId. Result list must have size of 1. Got %d", len(resultList))
+	}
+
+	expectedCodDist := record.CodDist
+	codDist := resultList[0]["CODDIST"]
+	if *expectedCodDist != codDist.(string){
+		t.Fatalf("Error on GetRecordByDistrictId. CodList should be %s. Got %s",
+			*record.CodDist, resultList[0]["CODDIST"])
 	}
 }
