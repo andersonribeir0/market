@@ -30,7 +30,7 @@ Para isso, execute: `make createTable`. Esse comando inicia a criação da tabel
 ### Get
 - `/health`
 - `/v1/market/:id`
-- `/v1/market?codInfo=*codInfo`
+- `/v1/market?codInfo=:codInfo`
 
 # Testes
 Para executar os testes. Basta executar o comando `make test`. Ele irá gerar um relatório em dois aquivos, um html `coverage.html` e outro `coverage.out` com a cobertura de testes por pacote.
