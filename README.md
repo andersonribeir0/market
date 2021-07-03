@@ -1,5 +1,10 @@
 # Market
-Aplicação responsável por exposição de dados sobre feira livre.
+Aplicação responsável pela consolidação e gestão dos dados da feiras em São Paulo.
+
+# Tecnologias usadas
+- docker
+- golang
+- dynamodb
 
 # Requisitos para executar a aplicação
 - docker
