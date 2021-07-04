@@ -36,6 +36,10 @@ Para isso, execute: `make createTable`. Esse comando inicia a criação da tabel
 Para executar os testes unitários e de integração. Basta executar o comando `make test`. Ele irá gerar um relatório em dois aquivos, um html `coverage.html` e outro `coverage.out` com a cobertura de testes por pacote.
 A cobertura de testes é realizada de maneira independente pacote a pacote.
 
+# Logs
+Todas os logs das chamadas http são enriquecidas com informação de requestId com o objetivo de melhorar o tracing.
+Logs estão estruturados e possuem duas saídas. stdout (0/dev/stdout) e para o arquivo `app_logs.log` localizado dentro do GOPATH
+
 # Comandos
 
 - `make clear` exclui todos os containers
