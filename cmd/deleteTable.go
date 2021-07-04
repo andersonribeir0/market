@@ -29,16 +29,15 @@ var deleteTableCmd = &cobra.Command{
 	Short: "Command to create dynamoDB Market table",
 	Long: `Responsible for deleting open market storage.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		logger := log.WithFields(log.Fields{"app": "market"})
 		conn, err := db.NewDB()
-		logger.Info("Connection opened")
+		log.Info("Connection opened")
 		if conn != nil {
 			err = conn.DeleteTable(constants.TableName)
 		}
 		if err != nil {
-			logger.Error(err.Error())
+			log.Error(err.Error())
 		} else {
-			logger.Info("Table deleted")
+			log.Info("Table deleted")
 		}
 	},
 }

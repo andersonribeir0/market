@@ -28,16 +28,15 @@ var createTableCmd = &cobra.Command{
 	Short: "Command to create dynamoDB Market table",
 	Long: `Responsible for storing open market infos with great response time on write with high scalability.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		logger := log.WithFields(log.Fields{"app": "market"})
 		conn, err := db.NewDB()
-		logger.Info("Connection opened")
+		log.Info("Connection opened")
 		if conn != nil {
 			err = conn.CreateTable(constants.TableName)
 		}
 		if err != nil {
-			logger.Error(err.Error())
+			log.Error(err.Error())
 		} else {
-			logger.Info("Table created")
+			log.Info("Table created")
 		}
 	},
 }
