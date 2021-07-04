@@ -32,6 +32,8 @@ func getRouter() *gin.Engine {
 	{
 		v1.GET("/market/:id", marketRoute.Get)
 		v1.GET("/market", marketRoute.GetByDistCode)
+		v1.DELETE("/market/:id", marketRoute.Delete)
+
 	}
 	return router
 }
