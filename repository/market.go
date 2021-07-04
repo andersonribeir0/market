@@ -12,6 +12,7 @@ type IMarketRepository interface {
 	Save(market model.Record) error
 	GetItem(id string) (model.Record, error)
 	GetItemsByDistrictId(id string) ([]model.Record, error)
+    Delete(id string) error
 }
 
 type MarketRepository struct {
@@ -53,4 +54,11 @@ func (mr *MarketRepository) GetItemsByDistrictId(id string) ([]model.Record, err
 		return nil, err
 	}
 	return record.FromRecordMapList(rec)
+}
+
+func (mr *MarketRepository) Delete(id string) error {
+	if err := mr.conn.DeleteById(id, mr.tableName); err != nil {
+		return err
+	}
+	return nil
 }

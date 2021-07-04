@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/andersonribeir0/market/logger"
 	"github.com/andersonribeir0/market/model"
 	"github.com/andersonribeir0/market/utils"
@@ -18,6 +19,8 @@ type MockIMarketRepository struct {
 	Save                   func(market model.Record) error
 	GetItem                func(id string) (model.Record, error)
 	GetItemsByDistrictId   func(id string) ([]model.Record, error)
+	Delete                 func(id string) error
+
 }
 
 type MarketRepositoryStub struct {
@@ -34,6 +37,10 @@ func (m MarketRepositoryStub) GetItem(id string) (model.Record, error) {
 
 func (m MarketRepositoryStub) GetItemsByDistrictId(id string)  ([]model.Record, error) {
 	return m.MockRepo.GetItemsByDistrictId(id)
+}
+
+func (m MarketRepositoryStub) Delete(id string) error {
+	return m.MockRepo.Delete(id)
 }
 
 func getGinContextMock(id string, method string, body io.Reader, requestId string, queryParamKey string) (*gin.Context, *httptest.ResponseRecorder) {
@@ -54,6 +61,52 @@ func getGinContextMock(id string, method string, body io.Reader, requestId strin
 	c.Request.Header.Add("X-Request-Id", requestId)
 
 	return c, w
+}
+
+func TestMarketHandler_Delete(t *testing.T) {
+	mockRepo := &MarketRepositoryStub{
+		MockRepo: MockIMarketRepository{
+			Delete: func(id string) error {
+				return nil
+			},
+		},
+	}
+
+	c, _ := getGinContextMock("anyId", "GET", nil, "", "")
+	handler := MarketHandler{
+		requestId:  "a_request_id",
+		marketRepo: mockRepo,
+		Logger:     logger.NewLogger(),
+	}
+
+	handler.Delete(c)
+
+	if c.Writer.Status() != 200 {
+		t.Fatalf("Expected 200. Received %d", c.Writer.Status())
+	}
+}
+
+func TestMarketHandler_DeleteError(t *testing.T) {
+	mockRepo := &MarketRepositoryStub{
+		MockRepo: MockIMarketRepository{
+			Delete: func(id string) error {
+				return errors.New("an_error")
+			},
+		},
+	}
+
+	c, _ := getGinContextMock("anyId", "GET", nil, "", "")
+	handler := MarketHandler{
+		requestId:  "a_request_id",
+		marketRepo: mockRepo,
+		Logger:     logger.NewLogger(),
+	}
+
+	handler.Delete(c)
+
+	if c.Writer.Status() != 500 {
+		t.Fatalf("Expected 500. Received %d", c.Writer.Status())
+	}
 }
 
 func TestMarketHandler_Get(t *testing.T) {

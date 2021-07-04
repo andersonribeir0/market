@@ -82,6 +82,29 @@ func (m *MarketHandler) GetByDistCode(c *gin.Context) {
 	c.JSON(200, items)
 }
 
+func (m *MarketHandler) Delete(c *gin.Context) {
+	m.Initialize(c)
+	marketId := c.Param("id")
+	m.Logger.Info(fmt.Sprintf("Deleting record by id %s", marketId))
+	if marketId == "" {
+		c.JSON(400, gin.H {
+			"error": "missing marketId ",
+		})
+		return
+	}
+
+	if err := m.marketRepo.Delete(marketId); err != nil {
+		msg := fmt.Sprintf("Error deleting id %s", marketId)
+		m.Logger.Error(msg, err)
+		c.JSON(500, gin.H {
+			"error": msg,
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{})
+}
+
 func (m *MarketHandler) setMarketRepo() {
 	if m.marketRepo == nil {
 		marketRepo := repository.MarketRepository{}

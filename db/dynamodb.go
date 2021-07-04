@@ -60,6 +60,22 @@ func (db *DB) PutRecord(item model.Record, tableName string) error {
 	return nil
 }
 
+func (db *DB) DeleteById(id string, tableName string) error {
+	deleteInput := &dynamodb.DeleteItemInput{
+		Key: map[string]*dynamodb.AttributeValue{
+			"ID": {
+				S: aws.String(id),
+			},
+		},
+		TableName: aws.String(tableName),
+	}
+	_, err := db.dynamo.DeleteItem(deleteInput)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Got error calling DeleteItem: %s", "err"))
+	}
+	return nil
+}
+
 func (db *DB) GetRecordById(id string, tableName string) (map[string]interface{}, error) {
 	input := &dynamodb.GetItemInput{
 		Key: map[string]*dynamodb.AttributeValue{
@@ -96,7 +112,7 @@ func (db *DB) GetRecordByDistrictId(id string, tableName string) ([]map[string]i
 		},
 		IndexName:              aws.String("districtIdIdx"),
 		KeyConditionExpression: aws.String("CODDIST = :districtId"),
-		TableName:      		aws.String(tableName),
+		TableName:              aws.String(tableName),
 	}
 
 	item, err := db.dynamo.Query(input)
@@ -156,7 +172,7 @@ func (db *DB) CreateTable(tableName string) error {
 					},
 				},
 				Projection: &dynamodb.Projection{
-					ProjectionType:   aws.String("ALL"),
+					ProjectionType: aws.String("ALL"),
 				},
 				ProvisionedThroughput: &dynamodb.ProvisionedThroughput{
 					ReadCapacityUnits:  aws.Int64(1),

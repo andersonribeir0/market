@@ -59,4 +59,9 @@ func TestDB(t *testing.T) {
 		t.Fatalf("Error on GetRecordByDistrictId. CodList should be %s. Got %s",
 			*record.CodDist, resultList[0]["CODDIST"])
 	}
+
+	err = connTest.DeleteById(record.Id.String(), tableName)
+	if err != nil {
+		t.Fatalf("Error on DeleteById. %s", err.Error())
+	}
 }
