@@ -28,6 +28,7 @@ func (m *MarketHandler) Initialize(c *gin.Context) {
 }
 
 func (m *MarketHandler) Get(c *gin.Context) {
+	m.Logger.Info("Getting market record")
 	m.Initialize(c)
 	marketId := c.Param("id")
 	if marketId == "" {

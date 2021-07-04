@@ -69,7 +69,7 @@ func TestMarketHandler_Get(t *testing.T) {
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,
-		Logger:     logger.NewLogger("test"),
+		Logger:     logger.NewLogger(),
 	}
 
 	handler.Get(c)
@@ -92,7 +92,7 @@ func TestMarketHandler_Get404(t *testing.T) {
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,
-		Logger:     logger.NewLogger("test"),
+		Logger:     logger.NewLogger(),
 	}
 
 	handler.Get(c)
@@ -117,7 +117,7 @@ func TestMarketHandler_GetByDistCodeEmpty(t *testing.T) {
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,
-		Logger:     logger.NewLogger("test"),
+		Logger:     logger.NewLogger(),
 	}
 
 	handler.GetByDistCode(c)
@@ -153,7 +153,7 @@ func TestMarketHandler_GetByDistCodeWithHits(t *testing.T) {
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,
-		Logger:     logger.NewLogger("test"),
+		Logger:     logger.NewLogger(),
 	}
 
 	handler.GetByDistCode(c)

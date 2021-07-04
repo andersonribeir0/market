@@ -2,56 +2,64 @@ package logger
 
 import (
 	"fmt"
-	customLog "github.com/sirupsen/logrus"
-	"io"
+	"github.com/sirupsen/logrus"
 	"os"
 	"strings"
 )
 
 type Log struct {
-	Service string
+	logger *logrus.Logger
+	metadata map[string] interface{}
 }
 
-func NewLogger(service string) *Log {
-	var level = customLog.DebugLevel
-	var file, _ = os.OpenFile("./market/logs", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	customLog.SetOutput(io.MultiWriter(os.Stdout, file))
-	customLog.SetFormatter(&customLog.JSONFormatter{})
-	customLog.SetLevel(level)
+func NewLogger() *Log{
+	var level = logrus.DebugLevel
+	extraData := make(map[string]interface{})
+	logger := logrus.New()
+	logger.Out = os.Stdout
+	logger.Formatter = &logrus.JSONFormatter{}
+	logger.Level = level
+
 	return &Log{
-		Service: service,
+		logger: logger,
+		metadata: extraData,
 	}
-
 }
 
-func (logger *Log) Debug(msg string, tags ...string) {
-	if customLog.IsLevelEnabled(customLog.DebugLevel) {
+func (l *Log) Debug(msg string, tags ...string) {
+	if l.logger.IsLevelEnabled(logrus.DebugLevel) {
 		return
 	}
-	customLog.WithFields(logger.parseFields(tags...)).Debug(msg)
+	logrus.WithFields(l.parseFields(tags...)).Debug(msg)
 }
 
-func (logger *Log) Info(msg string, tags ...string) {
-	if customLog.IsLevelEnabled(customLog.InfoLevel) {
+func (l *Log) Info(msg string, tags ...string) {
+	if l.logger.IsLevelEnabled(logrus.InfoLevel) {
 		return
 	}
-	customLog.WithFields(logger.parseFields(tags...)).Info(msg)
+	l.logger.WithFields(l.parseFields(tags...)).Info(msg)
 }
 
-func (logger *Log) Error(msg string, err error, tags ...string) {
-	if customLog.IsLevelEnabled(customLog.ErrorLevel) {
+func (l *Log) Error(msg string, err error, tags ...string) {
+	if l.logger.IsLevelEnabled(logrus.ErrorLevel) {
 		return
 	}
 	msg = fmt.Sprintf("%s - ERROR - %v", msg, err)
-	customLog.WithFields(logger.parseFields(tags...)).Error(msg)
+	l.logger.WithFields(l.parseFields(tags...)).Error(msg)
 }
 
-func (logger *Log) parseFields(tags ...string) customLog.Fields {
-	result := make(customLog.Fields, len(tags))
+func (l *Log) parseFields(tags ...string) logrus.Fields {
+	result := make(logrus.Fields, len(tags))
 	for _, tag := range tags {
 		els := strings.Split(tag, ":")
 		result[strings.TrimSpace(els[0])] = strings.TrimSpace(els[1])
 	}
-	result["service"] = logger.Service
+	for k, v := range l.metadata {
+		result[k] = v
+	}
 	return result
+}
+
+func (l *Log) WithField(k string, v string) {
+	l.metadata[k] = v
 }
