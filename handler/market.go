@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"github.com/andersonribeir0/market/logger"
 	"github.com/andersonribeir0/market/repository"
@@ -28,9 +29,9 @@ func (m *MarketHandler) Initialize(c *gin.Context) {
 }
 
 func (m *MarketHandler) Get(c *gin.Context) {
-	m.Logger.Info("Getting market record")
 	m.Initialize(c)
 	marketId := c.Param("id")
+	m.Logger.Info(fmt.Sprintf("Getting record by id %s", marketId))
 	if marketId == "" {
 		c.JSON(400, gin.H {
 			"error": "missing marketId ",
@@ -40,6 +41,7 @@ func (m *MarketHandler) Get(c *gin.Context) {
 
 	item, err := m.marketRepo.GetItem(marketId)
 	if err != nil {
+		m.Logger.Error(fmt.Sprintf("Error getting record by id %s", marketId), err)
 		c.JSON(400, gin.H {
 			"error": err.Error(),
 		})
@@ -47,10 +49,12 @@ func (m *MarketHandler) Get(c *gin.Context) {
 	}
 
 	if item.Id == nil {
+		m.Logger.Info(fmt.Sprintf("Record with id %s does not exists", marketId))
 		c.JSON(404, gin.H{})
 		return
 	}
 
+	m.Logger.Info(fmt.Sprintf("Got %#v", item))
 	c.JSON(200, item)
 }
 
@@ -58,20 +62,24 @@ func (m *MarketHandler) GetByDistCode(c *gin.Context) {
 	m.Initialize(c)
 	codDist := c.Query("codDist")
 	if codDist == "" {
+		m.Logger.Error("Missing codDist", errors.New("missing codDist"))
 		c.JSON(400, gin.H {
 			"error": "missing codDist",
 		})
 		return
 	}
 
-	item, err := m.marketRepo.GetItemsByDistrictId(codDist)
+	items, err := m.marketRepo.GetItemsByDistrictId(codDist)
 	if err != nil {
+		m.Logger.Error(fmt.Sprintf("Error getting records by codDist %s", codDist), err)
 		c.JSON(400, gin.H {
 			"error": err.Error(),
 		})
 		return
 	}
-	c.JSON(200, item)
+
+	m.Logger.Info(fmt.Sprintf("Got %#v", items))
+	c.JSON(200, items)
 }
 
 func (m *MarketHandler) setMarketRepo() {
