@@ -1,4 +1,5 @@
 clear:
+	find . -name "*.log" -type f -delete
 	docker-compose -f docker-compose.yaml down
 
 stop:
