@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 	"github.com/sirupsen/logrus"
+	"io"
 	"os"
 	"strings"
 )
@@ -12,13 +13,22 @@ type Log struct {
 	metadata map[string] interface{}
 }
 
+var logFile *os.File
+
 func NewLogger() *Log{
 	var level = logrus.DebugLevel
 	extraData := make(map[string]interface{})
+	file, err := os.OpenFile("app_logs.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+	print(err)
 	logger := logrus.New()
-	logger.Out = os.Stdout
+	logger.Out = io.MultiWriter(os.Stdout, file)
 	logger.Formatter = &logrus.JSONFormatter{}
 	logger.Level = level
+	logger.ExitFunc = func(i int) {
+		if file != nil {
+			file.Close()
+		}
+	}
 
 	return &Log{
 		logger: logger,
@@ -26,22 +36,23 @@ func NewLogger() *Log{
 	}
 }
 
+
 func (l *Log) Debug(msg string, tags ...string) {
-	if l.logger.IsLevelEnabled(logrus.DebugLevel) {
+	if !l.logger.IsLevelEnabled(logrus.DebugLevel) {
 		return
 	}
 	logrus.WithFields(l.parseFields(tags...)).Debug(msg)
 }
 
 func (l *Log) Info(msg string, tags ...string) {
-	if l.logger.IsLevelEnabled(logrus.InfoLevel) {
+	if !l.logger.IsLevelEnabled(logrus.InfoLevel) {
 		return
 	}
 	l.logger.WithFields(l.parseFields(tags...)).Info(msg)
 }
 
 func (l *Log) Error(msg string, err error, tags ...string) {
-	if l.logger.IsLevelEnabled(logrus.ErrorLevel) {
+	if !l.logger.IsLevelEnabled(logrus.ErrorLevel) {
 		return
 	}
 	msg = fmt.Sprintf("%s - ERROR - %v", msg, err)

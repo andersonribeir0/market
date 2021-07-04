@@ -5,8 +5,9 @@ import (
 	"github.com/andersonribeir0/market/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
 )
+
+var log = logger.NewLogger()
 
 func getRequestId(c *gin.Context) {
 	requestId := c.GetHeader("X-Request-Id")
@@ -20,7 +21,6 @@ func getRequestId(c *gin.Context) {
 
 func getRouter() *gin.Engine {
 	router := gin.Default()
-	log := logger.NewLogger()
 	log.WithField("service", "market_app")
 	healthRoute := handler.HealthHandler{  }
 	marketRoute := handler.MarketHandler{ Logger: log }
