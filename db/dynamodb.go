@@ -1,6 +1,7 @@
 package db
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/andersonribeir0/market/model"
@@ -37,10 +38,11 @@ func NewDB() (*DB, error) {
 func (db *DB) PutRecord(item model.Record, tableName string) error {
 	av, err := dynamodbattribute.MarshalMap(item)
 
+	data, _ := json.Marshal(item)
 	if err != nil {
 		return errors.New(fmt.Sprintf(
-			"It was not possible to parse map %#v error: %s",
-			item,
+			"It was not possible to parse map %s error: %s",
+			data,
 			err.Error()))
 	}
 
@@ -50,10 +52,11 @@ func (db *DB) PutRecord(item model.Record, tableName string) error {
 	}
 
 	_, err = db.dynamo.PutItem(input)
+
 	if err != nil {
 		return errors.New(fmt.Sprintf(
-			"It was not possible to put item %#v error: %s",
-			item,
+			"It was not possible to put item %s error: %s",
+			string(data),
 			err.Error()))
 	}
 

@@ -102,7 +102,8 @@ func (m *MarketHandler) Get(c *gin.Context) {
 		return
 	}
 
-	m.Logger.Info(fmt.Sprintf("Got %#v", item))
+	data, _ := json.Marshal(item)
+	m.Logger.Info(fmt.Sprintf("Got %s", string(data)))
 	c.JSON(200, item)
 }
 
@@ -125,8 +126,8 @@ func (m *MarketHandler) GetByDistCode(c *gin.Context) {
 		})
 		return
 	}
-
-	m.Logger.Info(fmt.Sprintf("Got %#v", items))
+	data, _ := json.Marshal(items)
+	m.Logger.Info(fmt.Sprintf("Got %s", string(data)))
 	c.JSON(200, items)
 }
 
