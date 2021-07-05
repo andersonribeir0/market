@@ -18,8 +18,7 @@ var logFile *os.File
 func NewLogger() *Log{
 	var level = logrus.DebugLevel
 	extraData := make(map[string]interface{})
-	file, err := os.OpenFile("app_logs.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
-	print(err)
+	file, _ := os.OpenFile("app_logs.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 	logger := logrus.New()
 	logger.Out = io.MultiWriter(os.Stdout, file)
 	logger.Formatter = &logrus.JSONFormatter{}

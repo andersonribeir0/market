@@ -33,7 +33,10 @@ Para isso, execute: `make createTable`. Esse comando inicia a criação da tabel
 - `/v1/market?codInfo=:codInfo`
 
 ### Delete
-- `/v1/delete/:id`
+- `/v1/market/:id`
+
+### Put
+- `/v1/market` 
 
 # Testes
 Para executar os testes unitários e de integração. Basta executar o comando `make test`. Ele irá gerar um relatório em dois aquivos, um html `coverage.html` e outro `coverage.out` com a cobertura de testes por pacote.

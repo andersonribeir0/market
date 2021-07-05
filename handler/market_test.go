@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"github.com/andersonribeir0/market/logger"
@@ -63,6 +64,89 @@ func getGinContextMock(id string, method string, body io.Reader, requestId strin
 	return c, w
 }
 
+func getBody() io.Reader{
+	s, _ := json.Marshal(map[string]interface{}{
+		"ID": 190,
+		"CODDIST": "50",
+		"DISTRITO": "LIMAO",
+		"NUMERO": "417.000000",
+		"BAIRRO": "VL STA MARIA",
+	})
+	return bytes.NewBuffer(s)
+}
+
+func TestMarketHandler_PutWithInvalidRequest(t *testing.T) {
+	mockRepo := &MarketRepositoryStub{
+		MockRepo: MockIMarketRepository{
+			Save: func(market model.Record) error {
+				return nil
+			},
+		},
+	}
+	s, _ := json.Marshal(map[string]interface{}{
+		"rada": "invalid",
+	})
+	b := bytes.NewBuffer(s)
+	c, _ := getGinContextMock("anyId", "PUT", b, "", "")
+	handler := MarketHandler{
+		requestId:  "a_request_id",
+		marketRepo: mockRepo,
+		Logger:     logger.NewLogger(),
+	}
+
+	handler.Put(c)
+
+	if c.Writer.Status() != 400 {
+		t.Fatalf("Expected 400. Received %d", c.Writer.Status())
+	}
+}
+
+func TestMarketHandler_PutWithRepoError(t *testing.T) {
+	mockRepo := &MarketRepositoryStub{
+		MockRepo: MockIMarketRepository{
+			Save: func(market model.Record) error {
+				return errors.New("repo error")
+			},
+		},
+	}
+
+	c, _ := getGinContextMock("anyId", "PUT", getBody(), "", "")
+	handler := MarketHandler{
+		requestId:  "a_request_id",
+		marketRepo: mockRepo,
+		Logger:     logger.NewLogger(),
+	}
+
+	handler.Put(c)
+
+	if c.Writer.Status() != 500 {
+		t.Fatalf("Expected 500. Received %d", c.Writer.Status())
+	}
+}
+
+func TestMarketHandler_Put(t *testing.T) {
+	mockRepo := &MarketRepositoryStub{
+		MockRepo: MockIMarketRepository{
+			Save: func(market model.Record) error {
+				return nil
+			},
+		},
+	}
+
+	c, _ := getGinContextMock("anyId", "PUT", getBody(), "", "")
+	handler := MarketHandler{
+		requestId:  "a_request_id",
+		marketRepo: mockRepo,
+		Logger:     logger.NewLogger(),
+	}
+
+	handler.Put(c)
+
+	if c.Writer.Status() != 200 {
+		t.Fatalf("Expected 200. Received %d", c.Writer.Status())
+	}
+}
+
 func TestMarketHandler_Delete(t *testing.T) {
 	mockRepo := &MarketRepositoryStub{
 		MockRepo: MockIMarketRepository{
@@ -72,7 +156,7 @@ func TestMarketHandler_Delete(t *testing.T) {
 		},
 	}
 
-	c, _ := getGinContextMock("anyId", "GET", nil, "", "")
+	c, _ := getGinContextMock("anyId", "DELETE", nil, "", "")
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,
@@ -95,7 +179,7 @@ func TestMarketHandler_DeleteError(t *testing.T) {
 		},
 	}
 
-	c, _ := getGinContextMock("anyId", "GET", nil, "", "")
+	c, _ := getGinContextMock("anyId", "DELETE", nil, "", "")
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,

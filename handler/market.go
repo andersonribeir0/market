@@ -1,12 +1,16 @@
 package handler
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/andersonribeir0/market/logger"
+	"github.com/andersonribeir0/market/model"
 	"github.com/andersonribeir0/market/repository"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gopkg.in/go-playground/validator.v9"
+	"io/ioutil"
 )
 
 type MarketHandler struct {
@@ -14,7 +18,6 @@ type MarketHandler struct {
 	marketRepo repository.IMarketRepository
 	Logger     *logger.Log
 }
-
 
 func (m *MarketHandler) setRequestId(c *gin.Context) {
 	if m.requestId = c.Request.Header.Get("X-Request-Id"); c.Request.Header.Get("X-Request-Id") == "" {
@@ -26,6 +29,51 @@ func (m *MarketHandler) setRequestId(c *gin.Context) {
 func (m *MarketHandler) Initialize(c *gin.Context) {
 	m.setRequestId(c)
 	m.setMarketRepo()
+}
+
+func (m *MarketHandler) Put(c *gin.Context) {
+	m.Initialize(c)
+	jsonData, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		msg := "Invalid data. JSON data is required."
+		m.Logger.Error(msg, err)
+		c.JSON(400, gin.H{
+			"error": msg,
+		})
+		return
+	}
+
+	var market model.Record
+	validate := validator.New()
+	if err = json.Unmarshal(jsonData, &market); err != nil {
+		msg := "Error unmarshalling request data."
+		m.Logger.Error(msg, err)
+		c.JSON(500, gin.H{
+			"error": msg,
+		})
+		return
+	}
+	if err = validate.Struct(market); err != nil {
+		msg := "Invalid data. JSON data is required."
+		m.Logger.Error(msg, err)
+		c.JSON(400, gin.H{
+			"error": msg,
+		})
+		return
+	}
+
+	m.Logger.Info(fmt.Sprintf("Inserting record %s", string(jsonData)))
+	if err := m.marketRepo.Save(market); err != nil {
+		msg := fmt.Sprintf("Error saving record %s", string(jsonData))
+		m.Logger.Error(msg, err)
+		c.JSON(500, gin.H{
+			"error": msg,
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{})
+	return
 }
 
 func (m *MarketHandler) Get(c *gin.Context) {

@@ -8,12 +8,12 @@ import (
 
 
 type Record struct {
-	Id               *json.Number     `json:"ID" validate:"required" binding:"required"`
+	Id               *json.Number     `json:"ID" validate:"required"`
 	Long             *json.Number     `json:"LONG,omitempty"`
 	Lat              *json.Number     `json:"LAT,omitempty"`
 	SetCens          *json.Number  	  `json:"SETCENS,omitempty"`
 	AreaP            *json.Number  	  `json:"AREAP,omitempty"`
-	CodDist          *string     	  `json:"CODDIST" validate:"required" binding:"required"`
+	CodDist          *string     	  `json:"CODDIST" validate:"required"`
 	District         *string 		  `json:"DISTRITO,omitempty"`
 	CodSubPref       *json.Number     `json:"CODSUBPREF,omitempty"`
 	SubPref          *string 		  `json:"SUBPREFE,omitempty"`
@@ -29,8 +29,11 @@ type Record struct {
 
 func (r Record) FromRecordMap(kv map[string]interface{}) (Record, error) {
 	record := Record{}
-	jsonString, _ := json.Marshal(kv)
-	err := json.Unmarshal(jsonString, &record)
+	jsonString, err := json.Marshal(kv)
+	if err != nil {
+		return record, errors.New(fmt.Sprintf("Error when marshalling map to json string %#v %s", kv, err.Error()))
+	}
+	err = json.Unmarshal(jsonString, &record)
 	if err != nil {
 		return record, errors.New(fmt.Sprintf("Error when parsing map to struct %#v %s", kv, err.Error()))
 	}
@@ -39,8 +42,11 @@ func (r Record) FromRecordMap(kv map[string]interface{}) (Record, error) {
 
 func (r Record) FromRecordMapList(lkv []map[string]interface{}) ([]Record, error) {
 	var record []Record
-	jsonString, _ := json.Marshal(lkv)
-	err := json.Unmarshal(jsonString, &record)
+	jsonString, err := json.Marshal(lkv)
+	if err != nil {
+		return record, errors.New(fmt.Sprintf("Error when marshalling map list to json string %#v", lkv))
+	}
+	err = json.Unmarshal(jsonString, &record)
 	if err != nil {
 		return record, errors.New(fmt.Sprintf("Error when parsing map list to struct %#v", lkv))
 	}
