@@ -25,7 +25,7 @@ Para isso, execute: `make createTable`. Esse comando inicia a criação da tabel
 **Caso não possua cURL, você pode também utilizar um outro cliente como o Postman.*
 
 
-#Endpoints
+# Endpoints
 
 ### Get
 - `/health`
