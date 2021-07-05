@@ -30,8 +30,8 @@ func (fp *CsvFileParser) Parse() ([]map[string]interface{}, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Error when trying to open file %s from path %s: %s",
-			fp.path,
 			fp.fileName,
+			fp.path,
 			err))
 	}
 	defer f.Close()
