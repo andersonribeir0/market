@@ -51,6 +51,7 @@ Logs estão estruturados e possuem duas saídas: stdout (/dev/stdout) e para o a
 - `make clear` exclui todos os containers
 - `make stop` derruba todos os containers
 - `make build` executa o processo de construção da imagem da aplicação
+- `make run` levanta os containers da aplicação e do dynamodb
 - `make dynamodb` levanta um container baseado na imagem existente do dynamo no dockerhub
 - `make createTable` cria tabela no dynamodb
 - `make deleteTable` exclui a tabela no dynamodb
