@@ -30,7 +30,7 @@ Para isso, execute: `make createTable`. Esse comando inicia a criação da tabel
 ### Get
 - `/health`
 - `/v1/market/:id`
-- `/v1/market?codInfo=:codInfo`
+- `/v1/market?codDist=:codDist`
 
 ### Delete
 - `/v1/market/:id`
