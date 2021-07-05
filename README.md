@@ -44,7 +44,7 @@ A cobertura de testes é realizada de maneira independente pacote a pacote.
 
 # Logs
 Todas os logs das chamadas http são enriquecidas com informação de requestId com o objetivo de melhorar o tracing.
-Logs estão estruturados e possuem duas saídas. stdout (/dev/stdout) e para o arquivo `app_logs.log` localizado dentro do GOPATH
+Logs estão estruturados e possuem duas saídas: stdout (/dev/stdout) e para o arquivo `app_logs.log` localizado dentro do projeto. Como o volume do container da aplicação está mapeado para raiz do projeto, um arquivo de log será criado localmente a medida que a aplicação recebe requisições.
 
 # Comandos
 
