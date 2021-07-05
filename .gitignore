@@ -13,6 +13,4 @@
 *.html
 *.log
 
-# Removing csv files
-/csv/*
 
