@@ -4,6 +4,8 @@ go 1.16
 
 require (
 	github.com/aws/aws-sdk-go v1.38.71
+	github.com/bshuster-repo/logrus-logstash-hook v1.0.2 // indirect
+	github.com/gemnasium/logrus-graylog-hook/v3 v3.0.3 // indirect
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-playground/validator/v10 v10.6.1 // indirect
 	github.com/google/uuid v1.2.0

@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/andersonribeir0/market/logger"
 	"github.com/andersonribeir0/market/model"
 	"github.com/andersonribeir0/market/utils"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"io"
 	"math/rand"
 	"net/http"
@@ -91,7 +91,7 @@ func TestMarketHandler_PutWithInvalidRequest(t *testing.T) {
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,
-		Logger:     logger.NewLogger(),
+		log:        log.New().WithField("anyKey","anyValue"),
 	}
 
 	handler.Put(c)
@@ -114,7 +114,7 @@ func TestMarketHandler_PutWithRepoError(t *testing.T) {
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,
-		Logger:     logger.NewLogger(),
+		log:        log.New().WithField("anyKey","anyValue"),
 	}
 
 	handler.Put(c)
@@ -137,7 +137,7 @@ func TestMarketHandler_Put(t *testing.T) {
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,
-		Logger:     logger.NewLogger(),
+		log:        log.New().WithField("anyKey","anyValue"),
 	}
 
 	handler.Put(c)
@@ -160,7 +160,7 @@ func TestMarketHandler_Delete(t *testing.T) {
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,
-		Logger:     logger.NewLogger(),
+		log:        log.New().WithField("anyKey","anyValue"),
 	}
 
 	handler.Delete(c)
@@ -183,7 +183,7 @@ func TestMarketHandler_DeleteError(t *testing.T) {
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,
-		Logger:     logger.NewLogger(),
+		log:        log.New().WithField("anyKey","anyValue"),
 	}
 
 	handler.Delete(c)
@@ -206,7 +206,7 @@ func TestMarketHandler_Get(t *testing.T) {
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,
-		Logger:     logger.NewLogger(),
+		log:        log.New().WithField("anyKey","anyValue"),
 	}
 
 	handler.Get(c)
@@ -229,7 +229,7 @@ func TestMarketHandler_Get404(t *testing.T) {
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,
-		Logger:     logger.NewLogger(),
+		log:        log.New().WithField("anyKey","anyValue"),
 	}
 
 	handler.Get(c)
@@ -254,7 +254,7 @@ func TestMarketHandler_GetByDistCodeEmpty(t *testing.T) {
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,
-		Logger:     logger.NewLogger(),
+		log:        log.New().WithField("anyKey","anyValue"),
 	}
 
 	handler.GetByDistCode(c)
@@ -290,7 +290,7 @@ func TestMarketHandler_GetByDistCodeWithHits(t *testing.T) {
 	handler := MarketHandler{
 		requestId:  "a_request_id",
 		marketRepo: mockRepo,
-		Logger:     logger.NewLogger(),
+		log:        log.New().WithField("anyKey","anyValue"),
 	}
 
 	handler.GetByDistCode(c)

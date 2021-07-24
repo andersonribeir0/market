@@ -13,4 +13,5 @@
 *.html
 *.log
 
+.idea/
 

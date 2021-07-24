@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/andersonribeir0/market/logger"
 	"github.com/andersonribeir0/market/model"
 	"github.com/andersonribeir0/market/repository"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/go-playground/validator.v9"
 	"io/ioutil"
 )
@@ -16,7 +16,7 @@ import (
 type MarketHandler struct {
 	requestId  string
 	marketRepo repository.IMarketRepository
-	Logger     *logger.Log
+	log *log.Entry
 }
 
 func (m *MarketHandler) setRequestId(c *gin.Context) {
@@ -24,6 +24,7 @@ func (m *MarketHandler) setRequestId(c *gin.Context) {
 		m.requestId = uuid.New().String()
 		c.Request.Header.Set("X-Request-Id", m.requestId)
 	}
+	m.log = log.WithField("requestId", m.requestId)
 }
 
 func (m *MarketHandler) Initialize(c *gin.Context) {
@@ -36,7 +37,7 @@ func (m *MarketHandler) Put(c *gin.Context) {
 	jsonData, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		msg := "Invalid data. JSON data is required."
-		m.Logger.Error(msg, err)
+		m.log.Error(msg, err)
 		c.JSON(400, gin.H{
 			"error": msg,
 		})
@@ -47,7 +48,7 @@ func (m *MarketHandler) Put(c *gin.Context) {
 	validate := validator.New()
 	if err = json.Unmarshal(jsonData, &market); err != nil {
 		msg := "Error unmarshalling request data."
-		m.Logger.Error(msg, err)
+		m.log.Error(msg, err)
 		c.JSON(500, gin.H{
 			"error": msg,
 		})
@@ -55,17 +56,17 @@ func (m *MarketHandler) Put(c *gin.Context) {
 	}
 	if err = validate.Struct(market); err != nil {
 		msg := "Invalid data. JSON data is required."
-		m.Logger.Error(msg, err)
+		m.log.Error(msg, err)
 		c.JSON(400, gin.H{
 			"error": msg,
 		})
 		return
 	}
 
-	m.Logger.Info(fmt.Sprintf("Inserting record %s", string(jsonData)))
+	m.log.Info(fmt.Sprintf("Inserting record %s", string(jsonData)))
 	if err := m.marketRepo.Save(market); err != nil {
 		msg := fmt.Sprintf("Error saving record %s", string(jsonData))
-		m.Logger.Error(msg, err)
+		m.log.Error(msg, err)
 		c.JSON(500, gin.H{
 			"error": msg,
 		})
@@ -79,7 +80,7 @@ func (m *MarketHandler) Put(c *gin.Context) {
 func (m *MarketHandler) Get(c *gin.Context) {
 	m.Initialize(c)
 	marketId := c.Param("id")
-	m.Logger.Info(fmt.Sprintf("Getting record by id %s", marketId))
+	m.log.Info(fmt.Sprintf("Getting record by id %s", marketId))
 	if marketId == "" {
 		c.JSON(400, gin.H {
 			"error": "missing marketId ",
@@ -89,7 +90,7 @@ func (m *MarketHandler) Get(c *gin.Context) {
 
 	item, err := m.marketRepo.GetItem(marketId)
 	if err != nil {
-		m.Logger.Error(fmt.Sprintf("Error getting record by id %s", marketId), err)
+		m.log.Error(fmt.Sprintf("Error getting record by id %s", marketId), err)
 		c.JSON(400, gin.H {
 			"error": err.Error(),
 		})
@@ -97,13 +98,13 @@ func (m *MarketHandler) Get(c *gin.Context) {
 	}
 
 	if item.Id == nil {
-		m.Logger.Info(fmt.Sprintf("Record with id %s does not exists", marketId))
+		m.log.Info(fmt.Sprintf("Record with id %s does not exists", marketId))
 		c.JSON(404, gin.H{})
 		return
 	}
 
 	data, _ := json.Marshal(item)
-	m.Logger.Info(fmt.Sprintf("Got %s", string(data)))
+	m.log.Info(fmt.Sprintf("Got %s", string(data)))
 	c.JSON(200, item)
 }
 
@@ -111,7 +112,7 @@ func (m *MarketHandler) GetByDistCode(c *gin.Context) {
 	m.Initialize(c)
 	codDist := c.Query("codDist")
 	if codDist == "" {
-		m.Logger.Error("Missing codDist", errors.New("missing codDist"))
+		log.Error("Missing codDist", errors.New("missing codDist"))
 		c.JSON(400, gin.H {
 			"error": "missing codDist",
 		})
@@ -120,21 +121,21 @@ func (m *MarketHandler) GetByDistCode(c *gin.Context) {
 
 	items, err := m.marketRepo.GetItemsByDistrictId(codDist)
 	if err != nil {
-		m.Logger.Error(fmt.Sprintf("Error getting records by codDist %s", codDist), err)
+		log.Error(fmt.Sprintf("Error getting records by codDist %s", codDist), err)
 		c.JSON(400, gin.H {
 			"error": err.Error(),
 		})
 		return
 	}
 	data, _ := json.Marshal(items)
-	m.Logger.Info(fmt.Sprintf("Got %s", string(data)))
+	log.Info(fmt.Sprintf("Got %s", string(data)))
 	c.JSON(200, items)
 }
 
 func (m *MarketHandler) Delete(c *gin.Context) {
 	m.Initialize(c)
 	marketId := c.Param("id")
-	m.Logger.Info(fmt.Sprintf("Deleting record by id %s", marketId))
+	log.Info(fmt.Sprintf("Deleting record by id %s", marketId))
 	if marketId == "" {
 		c.JSON(400, gin.H {
 			"error": "missing marketId ",
@@ -144,7 +145,7 @@ func (m *MarketHandler) Delete(c *gin.Context) {
 
 	if err := m.marketRepo.Delete(marketId); err != nil {
 		msg := fmt.Sprintf("Error deleting id %s", marketId)
-		m.Logger.Error(msg, err)
+		log.Error(msg, err)
 		c.JSON(500, gin.H {
 			"error": msg,
 		})
@@ -159,7 +160,7 @@ func (m *MarketHandler) setMarketRepo() {
 		marketRepo := repository.MarketRepository{}
 		err := marketRepo.New()
 		if err != nil {
-			m.Logger.Error("Error creating repo instance",
+			log.Error("Error creating repo instance",
 				err,
 				fmt.Sprintf("requestId:%s", m.requestId))
 		}

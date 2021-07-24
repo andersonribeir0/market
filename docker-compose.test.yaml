@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+
+  app:
+    build: .
+    container_name: app
+    command: ["go", "run", "main.go", "http"]
+    volumes:
+      - .:/go/src/market-app
+    ports:
+      - '8080:8080'
+    depends_on:
+      - dynamodb
+
+  dynamodb:
+    container_name: dynamodb
+    image: amazon/dynamodb-local:1.16.0
+    command: [ "-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory" ]
+    expose:
+      - "8000"
+    ports:
+      - '8000:8000'

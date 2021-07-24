@@ -1,9 +1,11 @@
 clear:
 	find . -name "*.log" -type f -delete
 	docker-compose -f docker-compose.yaml down
+	docker-compose -f docker-compose.test.yaml down
 
 stop:
 	docker-compose -f docker-compose.yaml stop
+	docker-compose -f docker-compose.test.yaml stop
 
 run:
 	docker-compose -f docker-compose.yaml up -d
@@ -32,8 +34,8 @@ importCsv:
 	docker-compose -f docker-compose.yaml run app go run main.go importCsv
 
 test:
-	docker-compose -f docker-compose.yaml run app go test -covermode=count -coverprofile=coverage.out ./...
-	docker-compose -f docker-compose.yaml run app go tool cover -html=coverage.out -o coverage.html
+	docker-compose -f docker-compose.test.yaml run app go test -covermode=count -coverprofile=coverage.out ./...
+	docker-compose -f docker-compose.test.yaml run app go tool cover -html=coverage.out -o coverage.html
 
 app:
 	docker-compose -f docker-compose.yaml up -d app
